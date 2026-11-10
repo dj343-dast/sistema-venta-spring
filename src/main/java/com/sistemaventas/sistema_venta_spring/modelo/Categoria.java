@@ -1,4 +1,4 @@
-package com.sistemaventas.sistemaventaspring.modelo;
+package com.sistemaventas.sistema_venta_spring.modelo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
