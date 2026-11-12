@@ -1,5 +1,6 @@
 package com.sistemaventas.sistema_venta_spring.controlador;
 
+import com.sistemaventas.sistema_venta_spring.excepcion.RecursoNoEncontradoException;
 import com.sistemaventas.sistema_venta_spring.modelo.Categoria;
 import com.sistemaventas.sistema_venta_spring.modelo.Producto;
 import com.sistemaventas.sistema_venta_spring.modelo.Proveedor;
@@ -35,7 +36,7 @@ public class ProductoController {
     /**
      * Spring entrega aqui los tres repositorios que necesita el controlador.
      *
-     * @param productoRepository acceso a la tabla productos
+     * @param productoRepository  acceso a la tabla productos
      * @param categoriaRepository acceso a la tabla categorias
      * @param proveedorRepository acceso a la tabla proveedor
      */
@@ -61,28 +62,28 @@ public class ProductoController {
      * Devuelve un producto por su id.
      *
      * @param id identificador del producto
-     * @return el producto (200) o un 404 si no existe
+     * @return el producto con su categoria y su proveedor
+     * @throws RecursoNoEncontradoException si el producto no existe (responde 404)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Producto> buscarPorId(@PathVariable Integer id) {
+    public Producto buscarPorId(@PathVariable Integer id) {
         return productoRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El producto " + id + " no existe"));
     }
 
     /**
      * Crea un producto nuevo.
      *
      * @param producto datos del producto enviados en el cuerpo de la peticion
-     * @return el producto guardado y el codigo 201, o 400 si la categoria o el
-     *         proveedor no existen
+     * @return el producto guardado y el codigo 201
+     * @throws RecursoNoEncontradoException si la categoria o el proveedor no
+     *                                      existen
      */
     @PostMapping
     public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
         producto.setIdProducto(null);
-        if (!asignarRelaciones(producto)) {
-            return ResponseEntity.badRequest().build();
-        }
+        asignarRelaciones(producto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(productoRepository.save(producto));
     }
@@ -90,22 +91,19 @@ public class ProductoController {
     /**
      * Actualiza un producto existente.
      *
-     * @param id identificador del producto a modificar
+     * @param id    identificador del producto a modificar
      * @param datos nuevos datos del producto
-     * @return el producto actualizado (200), 404 si no existe o 400 si la
-     *         categoria o el proveedor no existen
+     * @return el producto actualizado
+     * @throws RecursoNoEncontradoException si el producto, la categoria o el
+     *                                      proveedor no existen
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Producto> actualizar(@PathVariable Integer id,
+    public Producto actualizar(@PathVariable Integer id,
             @Valid @RequestBody Producto datos) {
-        Optional<Producto> encontrado = productoRepository.findById(id);
-        if (encontrado.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        if (!asignarRelaciones(datos)) {
-            return ResponseEntity.badRequest().build();
-        }
-        Producto existente = encontrado.get();
+        Producto existente = productoRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El producto " + id + " no existe"));
+        asignarRelaciones(datos);
         existente.setCodigo(datos.getCodigo());
         existente.setNombre(datos.getNombre());
         existente.setDescripcion(datos.getDescripcion());
@@ -115,19 +113,21 @@ public class ProductoController {
         existente.setStockMinimo(datos.getStockMinimo());
         existente.setCategoria(datos.getCategoria());
         existente.setProveedor(datos.getProveedor());
-        return ResponseEntity.ok(productoRepository.save(existente));
+        return productoRepository.save(existente);
     }
 
     /**
-     * Elimina un producto.
+     * Elimina un producto. Si ya tiene ventas asociadas, la base de datos lo
+     * rechaza y el manejador de errores responde 409.
      *
      * @param id identificador del producto a borrar
-     * @return 204 si se borro, o 404 si no existe
+     * @return 204 si se borro
+     * @throws RecursoNoEncontradoException si el producto no existe
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         if (!productoRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            throw new RecursoNoEncontradoException("El producto " + id + " no existe");
         }
         productoRepository.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -138,21 +138,23 @@ public class ProductoController {
      * objetos completos de la base de datos.
      *
      * @param producto producto cuyas relaciones se van a resolver
-     * @return true si ambas existen; false si falta alguna
+     * @throws RecursoNoEncontradoException si la categoria o el proveedor no
+     *                                      existen
      */
-    private boolean asignarRelaciones(Producto producto) {
+    private void asignarRelaciones(Producto producto) {
         Integer idCategoria = producto.getCategoria().getIdCategoria();
         Integer idProveedor = producto.getProveedor().getIdProveedor();
-        if (idCategoria == null || idProveedor == null) {
-            return false;
-        }
-        Optional<Categoria> categoria = categoriaRepository.findById(idCategoria);
-        Optional<Proveedor> proveedor = proveedorRepository.findById(idProveedor);
-        if (categoria.isEmpty() || proveedor.isEmpty()) {
-            return false;
-        }
-        producto.setCategoria(categoria.get());
-        producto.setProveedor(proveedor.get());
-        return true;
+
+        Categoria categoria = Optional.ofNullable(idCategoria)
+                .flatMap(categoriaRepository::findById)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "La categoria " + idCategoria + " no existe"));
+        Proveedor proveedor = Optional.ofNullable(idProveedor)
+                .flatMap(proveedorRepository::findById)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "El proveedor " + idProveedor + " no existe"));
+
+        producto.setCategoria(categoria);
+        producto.setProveedor(proveedor);
     }
 }
