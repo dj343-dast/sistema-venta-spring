@@ -1,5 +1,6 @@
 package com.sistemaventas.sistema_venta_spring.controlador;
 
+import com.sistemaventas.sistema_venta_spring.excepcion.RecursoNoEncontradoException;
 import com.sistemaventas.sistema_venta_spring.modelo.Categoria;
 import com.sistemaventas.sistema_venta_spring.repositorio.CategoriaRepository;
 import jakarta.validation.Valid;
@@ -48,13 +49,14 @@ public class CategoriaController {
      * Devuelve una categoria por su id.
      *
      * @param id identificador de la categoria
-     * @return la categoria (200) o un 404 si no existe
+     * @return la categoria encontrada
+     * @throws RecursoNoEncontradoException si no existe (responde 404)
      */
     @GetMapping("/{id}")
-    public ResponseEntity<Categoria> buscarPorId(@PathVariable Integer id) {
+    public Categoria buscarPorId(@PathVariable Integer id) {
         return categoriaRepository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "La categoria " + id + " no existe"));
     }
 
     /**
@@ -75,30 +77,31 @@ public class CategoriaController {
      *
      * @param id    identificador de la categoria a modificar
      * @param datos nuevos datos de la categoria
-     * @return la categoria actualizada (200) o un 404 si no existe
+     * @return la categoria actualizada
+     * @throws RecursoNoEncontradoException si no existe (responde 404)
      */
     @PutMapping("/{id}")
-    public ResponseEntity<Categoria> actualizar(@PathVariable Integer id,
+    public Categoria actualizar(@PathVariable Integer id,
             @Valid @RequestBody Categoria datos) {
-        return categoriaRepository.findById(id)
-                .map(existente -> {
-                    existente.setNombre(datos.getNombre());
-                    existente.setDescripcion(datos.getDescripcion());
-                    return ResponseEntity.ok(categoriaRepository.save(existente));
-                })
-                .orElse(ResponseEntity.notFound().build());
+        Categoria existente = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException(
+                        "La categoria " + id + " no existe"));
+        existente.setNombre(datos.getNombre());
+        existente.setDescripcion(datos.getDescripcion());
+        return categoriaRepository.save(existente);
     }
 
     /**
      * Elimina una categoria.
      *
      * @param id identificador de la categoria a borrar
-     * @return 204 si se borro, o 404 si no existe
+     * @return 204 si se borro
+     * @throws RecursoNoEncontradoException si no existe (responde 404)
      */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable Integer id) {
         if (!categoriaRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            throw new RecursoNoEncontradoException("La categoria " + id + " no existe");
         }
         categoriaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
