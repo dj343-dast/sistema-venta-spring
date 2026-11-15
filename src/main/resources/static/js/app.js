@@ -20,6 +20,15 @@ const MODULOS = {
       { n: "descripcion", t: "Descripción", max: 200 }
     ]
   },
+  proveedores: {
+    singular: "proveedor", plural: "proveedores", id: "idProveedor",
+    campos: [
+      { n: "nombreEmpresa", t: "Empresa", req: true, max: 100 },
+      { n: "telefono", t: "Teléfono", max: 20 },
+      { n: "correo", t: "Correo", tipo: "email", max: 100 },
+      { n: "direccion", t: "Dirección", max: 150 }
+    ]
+  },
   productos: {
     singular: "producto", plural: "productos", id: "idProducto",
     campos: [
@@ -31,7 +40,7 @@ const MODULOS = {
       { n: "stockActual", t: "Stock actual", tipo: "number", req: true },
       { n: "stockMinimo", t: "Stock mínimo", tipo: "number", req: true },
       { n: "categoria", t: "Categoría", tipo: "categoria", req: true },
-      { n: "proveedor", t: "ID del proveedor", tipo: "proveedor", req: true }
+      { n: "proveedor", t: "Proveedor", tipo: "proveedor", req: true }
     ]
   }
 };
@@ -45,7 +54,7 @@ const $ = (id) => document.getElementById(id);
 /** Lee un valor anidado: categoria -> nombre de la categoría. */
 function valorCelda(fila, c) {
   if (c.tipo === "categoria") return fila.categoria ? fila.categoria.nombre : "";
-  if (c.tipo === "proveedor") return fila.proveedor ? fila.proveedor.idProveedor : "";
+  if (c.tipo === "proveedor") return fila.proveedor ? fila.proveedor.nombreEmpresa : "";
   return fila[c.n] ?? "";
 }
 
@@ -53,7 +62,11 @@ function valorCelda(fila, c) {
 async function dibujarFormulario() {
   const m = MODULOS[actual];
   let categorias = [];
-  if (actual === "productos") categorias = await pedir("categorias");
+  let proveedores = [];
+  if (actual === "productos") {
+    categorias = await pedir("categorias");
+    proveedores = await pedir("proveedores");
+  }
 
   $("campos").innerHTML = m.campos.map((c) => {
     const req = c.req ? ' <span class="req">*</span>' : "";
@@ -62,8 +75,12 @@ async function dibujarFormulario() {
       control = `<select id="f_${c.n}"><option value="">Seleccione...</option>` +
         categorias.map((k) => `<option value="${k.idCategoria}">${esc(k.nombre)}</option>`).join("") +
         "</select>";
+    } else if (c.tipo === "proveedor") {
+      control = `<select id="f_${c.n}"><option value="">Seleccione...</option>` +
+        proveedores.map((p) => `<option value="${p.idProveedor}">${esc(p.nombreEmpresa)}</option>`).join("") +
+        "</select>";
     } else {
-      const tipo = c.tipo === "number" || c.tipo === "proveedor" ? "number" : (c.tipo || "text");
+      const tipo = c.tipo === "number" ? "number" : (c.tipo || "text");
       const paso = c.tipo === "number" ? ' step="any"' : "";
       control = `<input id="f_${c.n}" type="${tipo === "email" ? "text" : tipo}"${paso}>`;
     }
@@ -184,9 +201,14 @@ async function eliminar(id) {
   }
 }
 
+/** Pide una lista a la API; si falla, avisa en pantalla en vez de quedarse en silencio. */
 async function pedir(ruta) {
   const r = await fetch(API + ruta);
-  return r.ok ? r.json() : [];
+  if (!r.ok) {
+    aviso("No se pudo cargar " + ruta + " (error " + r.status + ")", false);
+    return [];
+  }
+  return r.json();
 }
 
 function aviso(texto, ok) {
