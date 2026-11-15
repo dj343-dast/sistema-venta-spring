@@ -1,10 +1,12 @@
 package com.sistemaventas.sistema_venta_spring.controlador;
 
 import com.sistemaventas.sistema_venta_spring.excepcion.RecursoNoEncontradoException;
+import com.sistemaventas.sistema_venta_spring.excepcion.ValorDuplicadoException;
 import com.sistemaventas.sistema_venta_spring.modelo.Proveedor;
 import com.sistemaventas.sistema_venta_spring.repositorio.ProveedorRepository;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -64,10 +66,12 @@ public class ProveedorController {
      *
      * @param proveedor datos enviados en el cuerpo de la peticion (JSON)
      * @return el proveedor guardado, con su id, y el codigo 201
+     * @throws ValorDuplicadoException si la empresa, el telefono o el correo ya existen
      */
     @PostMapping
     public ResponseEntity<Proveedor> crear(@Valid @RequestBody Proveedor proveedor) {
         proveedor.setIdProveedor(null);
+        validarUnicos(proveedor, null);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(proveedorRepository.save(proveedor));
     }
@@ -79,6 +83,8 @@ public class ProveedorController {
      * @param datos nuevos datos del proveedor
      * @return el proveedor actualizado
      * @throws RecursoNoEncontradoException si no existe (responde 404)
+     * @throws ValorDuplicadoException si la empresa, el telefono o el correo
+     *         pertenecen a otro proveedor
      */
     @PutMapping("/{id}")
     public Proveedor actualizar(@PathVariable Integer id,
@@ -86,6 +92,7 @@ public class ProveedorController {
         Proveedor existente = proveedorRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "El proveedor " + id + " no existe"));
+        validarUnicos(datos, id);
         existente.setNombreEmpresa(datos.getNombreEmpresa());
         existente.setTelefono(datos.getTelefono());
         existente.setCorreo(datos.getCorreo());
@@ -108,5 +115,36 @@ public class ProveedorController {
         }
         proveedorRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Comprueba que la empresa, el telefono y el correo no los tenga otro proveedor.
+     *
+     * @param proveedor datos que se quieren guardar
+     * @param idActual id del proveedor que se edita, o null si es uno nuevo
+     * @throws ValorDuplicadoException si algun valor ya pertenece a otro proveedor
+     */
+    private void validarUnicos(Proveedor proveedor, Integer idActual) {
+        if (proveedor.getNombreEmpresa() != null) {
+            verificar("nombreEmpresa", "nombre de empresa",
+                    proveedorRepository.findByNombreEmpresa(proveedor.getNombreEmpresa()), idActual);
+        }
+        if (proveedor.getTelefono() != null) {
+            verificar("telefono", "telefono",
+                    proveedorRepository.findByTelefono(proveedor.getTelefono()), idActual);
+        }
+        if (proveedor.getCorreo() != null) {
+            verificar("correo", "correo",
+                    proveedorRepository.findByCorreo(proveedor.getCorreo()), idActual);
+        }
+    }
+
+    /** Lanza la excepcion si el valor encontrado pertenece a un proveedor distinto. */
+    private void verificar(String campo, String etiqueta,
+            Optional<Proveedor> existente, Integer idActual) {
+        if (existente.isPresent() && !existente.get().getIdProveedor().equals(idActual)) {
+            throw new ValorDuplicadoException(campo,
+                    "Ya existe un proveedor con ese " + etiqueta);
+        }
     }
 }
