@@ -1,0 +1,127 @@
+/* Estilos del sistema de ventas e inventario.
+   Los colores se definen una sola vez como variables para cambiarlos fácil. */
+:root {
+  --fondo: #f3f5f9;
+  --tarjeta: #ffffff;
+  --texto: #1f2937;
+  --suave: #6b7280;
+  --borde: #d9dee7;
+  --principal: #2457c5;
+  --principal-oscuro: #1a429a;
+  --peligro: #c0392b;
+  --exito: #1e8e5a;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Roboto, Arial, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+/* ---- Barra superior ---- */
+.barra {
+  background: var(--principal);
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.barra h1 { margin: 0; font-size: 1.25rem; }
+#menu { display: flex; gap: 6px; }
+#menu button {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .5);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: .95rem;
+}
+#menu button:hover { background: rgba(255, 255, 255, .15); }
+#menu button.activo { background: #fff; color: var(--principal); font-weight: 600; }
+
+/* ---- Contenido ---- */
+.contenedor {
+  max-width: 1100px;
+  margin: 24px auto;
+  padding: 0 16px;
+  display: grid;
+  gap: 20px;
+}
+.tarjeta {
+  background: var(--tarjeta);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 20px 24px;
+}
+.tarjeta h2 { margin: 0 0 16px; font-size: 1.1rem; }
+
+/* ---- Formulario ---- */
+.rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.campo label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 4px; }
+.campo .req { color: var(--peligro); }
+.campo input, .campo select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-size: .95rem;
+  background: #fff;
+  color: var(--texto);
+}
+.campo input:focus, .campo select:focus {
+  outline: 2px solid rgba(36, 87, 197, .35);
+  border-color: var(--principal);
+}
+.campo.invalido input, .campo.invalido select { border-color: var(--peligro); }
+.campo small { display: block; color: var(--peligro); min-height: 1em; margin-top: 3px; font-size: .8rem; }
+
+.errores {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-left: 4px solid var(--peligro);
+  background: #fdecea;
+  color: #7a1f16;
+  border-radius: 4px;
+  font-size: .9rem;
+}
+.errores ul { margin: 6px 0 0; padding-left: 18px; }
+
+.acciones { margin-top: 16px; display: flex; gap: 10px; }
+button.primario, button.secundario, button.mini {
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: .95rem;
+  cursor: pointer;
+}
+button.primario { background: var(--principal); color: #fff; }
+button.primario:hover { background: var(--principal-oscuro); }
+button.secundario { background: #e8ecf3; color: var(--texto); }
+button.secundario:hover { background: #dbe1ec; }
+
+/* ---- Avisos ---- */
+.aviso { padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; font-size: .9rem; }
+.aviso.ok { background: #e6f5ee; color: #14532d; border-left: 4px solid var(--exito); }
+.aviso.mal { background: #fdecea; color: #7a1f16; border-left: 4px solid var(--peligro); }
+
+/* ---- Tabla ---- */
+.tabla-caja { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
+th { background: #eef1f7; font-size: .8rem; text-transform: uppercase; letter-spacing: .03em; color: var(--suave); }
+tr:hover td { background: #f8f9fc; }
+td.vacio { text-align: center; color: var(--suave); padding: 20px; }
+button.mini { padding: 5px 11px; font-size: .8rem; margin-right: 4px; }
+button.mini.editar { background: #e3ebfb; color: var(--principal); }
+button.mini.borrar { background: #fbe4e1; color: var(--peligro); }
+
+@media (max-width: 560px) {
+  .barra { flex-direction: column; align-items: flex-start; }
+}
