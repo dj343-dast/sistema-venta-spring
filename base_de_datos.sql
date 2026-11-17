@@ -30,7 +30,7 @@ CREATE TABLE `categorias` (
   `descripcion` varchar(200) DEFAULT NULL,
   PRIMARY KEY (`id_Categoria`),
   UNIQUE KEY `VARCHAR (50)_UNIQUE` (`nombre`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -47,8 +47,11 @@ CREATE TABLE `clientes` (
   `telefono` varchar(20) DEFAULT NULL,
   `correo` varchar(100) DEFAULT NULL,
   `direccion` varchar(150) DEFAULT NULL,
-  PRIMARY KEY (`id_clientes`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb3;
+  PRIMARY KEY (`id_clientes`),
+  UNIQUE KEY `uq_clientes_documento` (`documento`),
+  UNIQUE KEY `uq_clientes_nombre` (`nombre`),
+  UNIQUE KEY `correo_UNIQUE` (`correo`)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -140,7 +143,7 @@ CREATE TABLE `productos` (
   KEY `fk_productos_Proveedores1_idx` (`id_Proveedor`),
   CONSTRAINT `fk_productos_Categorias` FOREIGN KEY (`id_Categoria`) REFERENCES `categorias` (`id_Categoria`),
   CONSTRAINT `fk_productos_Proveedores1` FOREIGN KEY (`id_Proveedor`) REFERENCES `proveedor` (`id_Proveedores`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -156,8 +159,11 @@ CREATE TABLE `proveedor` (
   `telefono` varchar(20) DEFAULT NULL,
   `correo` varchar(100) DEFAULT NULL,
   `direccion` varchar(150) DEFAULT NULL,
-  PRIMARY KEY (`id_Proveedores`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb3;
+  PRIMARY KEY (`id_Proveedores`),
+  UNIQUE KEY `uq_proveedor_empresa` (`nombre_empresa`),
+  UNIQUE KEY `uq_proveedor_telefono` (`telefono`),
+  UNIQUE KEY `uq_proveedor_correo` (`correo`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -172,7 +178,7 @@ CREATE TABLE `usuario` (
   `nombre_completo` varchar(100) DEFAULT NULL,
   `correo` varchar(100) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
-  `rol` enum('admin','vendedor','bodega') NOT NULL,
+  `rol` enum('adimn','admin','vendedor','bodega') NOT NULL,
   `estado` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id_usuario`),
   UNIQUE KEY `correo_UNIQUE` (`correo`)
@@ -207,4 +213,4 @@ CREATE TABLE `ventas` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-11-12 16:51:02
+-- Dump completed on 2026-11-17 17:40:27
