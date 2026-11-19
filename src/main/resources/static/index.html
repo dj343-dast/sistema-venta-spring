@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sistema de Ventas e Inventario</title>
   <link rel="stylesheet" href="css/estilos.css">
 </head>
-
 <body>
   <header class="barra">
     <h1>Sistema de Ventas e Inventario</h1>
@@ -16,35 +14,79 @@
       <button data-ent="categorias">Categorías</button>
       <button data-ent="proveedores">Proveedores</button>
       <button data-ent="productos">Productos</button>
+      <button data-ent="ventas">Ventas</button>
     </nav>
   </header>
 
   <main class="contenedor">
-    <section class="tarjeta">
-      <h2 id="tituloForm">Registrar cliente</h2>
-      <form id="formulario" novalidate>
-        <div id="campos" class="rejilla"></div>
-        <div id="errores" class="errores" role="alert" hidden></div>
-        <div class="acciones">
-          <button type="submit" class="primario" id="btnGuardar">Guardar</button>
-          <button type="button" class="secundario" id="btnCancelar">Cancelar</button>
-        </div>
-      </form>
-    </section>
+    <!-- Avisos de exito o error; se ven en todas las pestanas -->
+    <div id="aviso" class="aviso" hidden></div>
 
-    <section class="tarjeta">
-      <h2 id="tituloLista">Lista de clientes</h2>
-      <div id="aviso" class="aviso" hidden></div>
-      <div class="tabla-caja">
-        <table>
-          <thead id="encabezado"></thead>
-          <tbody id="filas"></tbody>
-        </table>
-      </div>
-    </section>
+    <!-- Vista de administracion: formulario y tabla de clientes, categorias, etc. -->
+    <div id="vistaGenerica" class="vista">
+      <section class="tarjeta">
+        <h2 id="tituloForm">Registrar cliente</h2>
+        <form id="formulario" novalidate>
+          <div id="campos" class="rejilla"></div>
+          <div id="errores" class="errores" role="alert" hidden></div>
+          <div class="acciones">
+            <button type="submit" class="primario" id="btnGuardar">Guardar</button>
+            <button type="button" class="secundario" id="btnCancelar">Cancelar</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="tarjeta">
+        <h2 id="tituloLista">Lista de clientes</h2>
+        <div class="tabla-caja">
+          <table>
+            <thead id="encabezado"></thead>
+            <tbody id="filas"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Vista de ventas: registrar una venta con varias lineas y ver las ventas -->
+    <div id="vistaVentas" class="vista" hidden>
+      <section class="tarjeta">
+        <h2>Registrar venta</h2>
+        <form id="formVenta" novalidate>
+          <div class="campo">
+            <label for="v_cliente">Cliente <span class="req">*</span></label>
+            <select id="v_cliente"></select>
+          </div>
+
+          <h3 class="subtitulo">Productos de la venta</h3>
+          <div id="lineasVenta"></div>
+          <button type="button" class="secundario" id="btnAgregarLinea">Agregar producto</button>
+
+          <p class="total">Total estimado: <strong id="totalVenta">$ 0</strong></p>
+          <div id="erroresVenta" class="errores" role="alert" hidden></div>
+          <div class="acciones">
+            <button type="submit" class="primario">Registrar venta</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="tarjeta">
+        <h2>Ventas registradas</h2>
+        <div class="tabla-caja">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th><th>Fecha</th><th>Cliente</th>
+                <th>Productos</th><th>Total</th><th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="filasVentas"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
   </main>
 
   <script src="js/app.js"></script>
+  <script src="js/ventas.js"></script>
 </body>
-
 </html>

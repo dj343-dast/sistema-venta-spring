@@ -125,3 +125,25 @@ button.mini.borrar { background: #fbe4e1; color: var(--peligro); }
 @media (max-width: 560px) {
   .barra { flex-direction: column; align-items: flex-start; }
 }
+/* ---- Vistas: cada pestana muestra una ---- */
+.vista { display: grid; gap: 20px; }
+.vista[hidden] { display: none; }
+
+/* ---- Pantalla de ventas ---- */
+.subtitulo { margin: 18px 0 10px; font-size: 1rem; }
+.linea {
+  display: grid;
+  grid-template-columns: 1fr 110px 130px auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.linea select, .linea input {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  font-size: .95rem;
+}
+.l_subtotal { text-align: right; font-weight: 600; }
+.total { font-size: 1.1rem; margin: 14px 0; }

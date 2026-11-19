@@ -71,4 +71,15 @@ public class ManejadorErrores {
         return ResponseEntity.status(estado)
                 .body(new ErrorRespuesta(estado.value(), mensaje, detalles));
     }
+        /**
+     * Un valor unico (documento, correo, nombre) ya existe en otro registro.
+     *
+     * @param excepcion la excepcion con el campo repetido
+     * @return respuesta 409 con el campo en el formato "campo: mensaje"
+     */
+    @ExceptionHandler(ValorDuplicadoException.class)
+    public ResponseEntity<ErrorRespuesta> valorDuplicado(ValorDuplicadoException excepcion) {
+        return construir(HttpStatus.CONFLICT, "Ya existe un registro con ese valor",
+                List.of(excepcion.getCampo() + ": " + excepcion.getMessage()));
+    }
 }

@@ -101,13 +101,21 @@ function dibujarTabla() {
       `<button class="mini borrar" data-id="${f[m.id]}">Eliminar</button></td></tr>`).join("");
 }
 
-/** Cambia de módulo y recarga todo. */
+/** Cambia de pestana: las de administracion usan el formulario generico; ventas tiene su vista. */
 async function cambiarModulo(nombre) {
-  actual = nombre;
   document.querySelectorAll("#menu button").forEach((b) => b.classList.toggle("activo", b.dataset.ent === nombre));
+  const esVentas = nombre === "ventas";
+  $("vistaGenerica").hidden = esVentas;
+  $("vistaVentas").hidden = !esVentas;
+  if (esVentas) {
+    await iniciarVentas();
+    return;
+  }
+  actual = nombre;
   await dibujarFormulario();
   await cargar();
   limpiar();
+
 }
 
 async function cargar() {
@@ -120,7 +128,7 @@ function limpiar() {
   editandoId = null;
   $("formulario").reset();
   $("errores").hidden = true;
-  document.querySelectorAll(".campo").forEach((d) => { d.classList.remove("invalido"); d.querySelector("small").textContent = ""; });
+   document.querySelectorAll("#campos .campo").forEach((d) => { d.classList.remove("invalido"); d.querySelector("small").textContent = ""; });
   $("tituloForm").textContent = "Registrar " + MODULOS[actual].singular;
   $("btnGuardar").textContent = "Guardar";
 }
@@ -171,7 +179,7 @@ async function guardar(e) {
 
 function limpiarMarcas() {
   $("errores").hidden = true;
-  document.querySelectorAll(".campo").forEach((d) => { d.classList.remove("invalido"); d.querySelector("small").textContent = ""; });
+  document.querySelectorAll("#campos .campo").forEach((d) => { d.classList.remove("invalido"); d.querySelector("small").textContent = ""; });
 }
 
 function editar(id) {
