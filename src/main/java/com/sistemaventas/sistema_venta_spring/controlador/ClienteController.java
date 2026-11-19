@@ -1,10 +1,12 @@
 package com.sistemaventas.sistema_venta_spring.controlador;
 
 import com.sistemaventas.sistema_venta_spring.excepcion.RecursoNoEncontradoException;
+import com.sistemaventas.sistema_venta_spring.excepcion.ValorDuplicadoException; 
 import com.sistemaventas.sistema_venta_spring.modelo.Cliente;
 import com.sistemaventas.sistema_venta_spring.repositorio.ClienteRepository;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional; 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +17,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 /**
  * Expone por HTTP las operaciones sobre los clientes.
@@ -65,10 +66,12 @@ public class ClienteController {
      *
      * @param cliente datos enviados en el cuerpo de la peticion (JSON)
      * @return el cliente guardado, con su id, y el codigo 201
+     * @throws ValorDuplicadoException si el documento, el correo o el nombre ya existen
      */
     @PostMapping
     public ResponseEntity<Cliente> crear(@Valid @RequestBody Cliente cliente) {
         cliente.setIdCliente(null);
+        validarUnicos(cliente, null); // NUEVO
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clienteRepository.save(cliente));
     }
@@ -80,6 +83,8 @@ public class ClienteController {
      * @param datos nuevos datos del cliente
      * @return el cliente actualizado
      * @throws RecursoNoEncontradoException si el cliente no existe (responde 404)
+     * @throws ValorDuplicadoException si el documento, el correo o el nombre
+     *         pertenecen a otro cliente
      */
     @PutMapping("/{id}")
     public Cliente actualizar(@PathVariable Integer id,
@@ -87,6 +92,7 @@ public class ClienteController {
         Cliente existente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "El cliente " + id + " no existe"));
+        validarUnicos(datos, id); // NUEVO
         existente.setNombre(datos.getNombre());
         existente.setDocumento(datos.getDocumento());
         existente.setTelefono(datos.getTelefono());
@@ -110,5 +116,31 @@ public class ClienteController {
         }
         clienteRepository.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Comprueba que el documento, el correo y el nombre no los tenga otro cliente.
+     *
+     * @param cliente datos que se quieren guardar
+     * @param idActual id del cliente que se edita, o null si es uno nuevo
+     * @throws ValorDuplicadoException si algun valor ya pertenece a otro cliente
+     */
+    private void validarUnicos(Cliente cliente, Integer idActual) { // NUEVO
+        if (cliente.getDocumento() != null) {
+            verificar("documento", clienteRepository.findByDocumento(cliente.getDocumento()), idActual);
+        }
+        if (cliente.getCorreo() != null) {
+            verificar("correo", clienteRepository.findByCorreo(cliente.getCorreo()), idActual);
+        }
+        if (cliente.getNombre() != null) {
+            verificar("nombre", clienteRepository.findByNombre(cliente.getNombre()), idActual);
+        }
+    }
+
+    /** Lanza la excepcion si el valor encontrado pertenece a un cliente distinto. */
+    private void verificar(String campo, Optional<Cliente> existente, Integer idActual) { // NUEVO
+        if (existente.isPresent() && !existente.get().getIdCliente().equals(idActual)) {
+            throw new ValorDuplicadoException(campo, "Ya existe un cliente con ese " + campo);
+        }
     }
 }
