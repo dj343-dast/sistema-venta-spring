@@ -72,7 +72,7 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<Cliente> crear(@Valid @RequestBody Cliente cliente) {
         cliente.setIdCliente(null);
-        validarUnicos(cliente, null); // NUEVO
+        validarUnicos(cliente, null); 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(clienteRepository.save(cliente));
     }
@@ -93,7 +93,7 @@ public class ClienteController {
         Cliente existente = clienteRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException(
                         "El cliente " + id + " no existe"));
-        validarUnicos(datos, id); // NUEVO
+        validarUnicos(datos, id); 
         existente.setNombre(datos.getNombre());
         existente.setDocumento(datos.getDocumento());
         existente.setTelefono(datos.getTelefono());
@@ -126,7 +126,7 @@ public class ClienteController {
      * @param idActual id del cliente que se edita, o null si es uno nuevo
      * @throws ValorDuplicadoException si algun valor ya pertenece a otro cliente
      */
-    private void validarUnicos(Cliente cliente, Integer idActual) { // NUEVO
+    private void validarUnicos(Cliente cliente, Integer idActual) { 
         if (cliente.getDocumento() != null) {
             verificar("documento", clienteRepository.findByDocumento(cliente.getDocumento()), idActual);
         }
@@ -139,7 +139,7 @@ public class ClienteController {
     }
 
     /** Lanza la excepcion si el valor encontrado pertenece a un cliente distinto. */
-    private void verificar(String campo, Optional<Cliente> existente, Integer idActual) { // NUEVO
+    private void verificar(String campo, Optional<Cliente> existente, Integer idActual) { 
         if (existente.isPresent() && !existente.get().getIdCliente().equals(idActual)) {
             throw new ValorDuplicadoException(campo, "Ya existe un cliente con ese " + campo);
         }

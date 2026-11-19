@@ -99,6 +99,8 @@ VALUES ('Maria Gomez', '1002003004', '3009876543', 'maria@correo.com', 'Carrera 
 Las categorias y los productos se crean desde la API.
 
 ## API
+La documentación detallada de cada servicio (campos, validaciones, ejemplos y
+códigos de respuesta) está en [docs/api.md](docs/api.md).
 
 | Recurso | Metodo | Direccion | Descripcion |
 |---|---|---|---|
@@ -192,6 +194,16 @@ Todos los errores se devuelven con la misma forma:
 | Venta con dos lineas donde la segunda no tiene stock | 409, el stock queda como estaba (la transaccion se deshace) |
 | Venta con un cliente que no existe | 404 |
 | Venta sin productos | 400 |
+
+## Artefactos
+
+- Historias de usuario y su trazabilidad con el codigo:
+  `docs/historias_de_usuario.md`.
+- Diagrama de clases (modelo de dominio y capa de ventas):
+  `docs/diagrama_de_clases.md`.
+- Diseno de la base de datos: `base_de_datos.sql`.
+- Prototipo de pantallas: la pagina de `src/main/resources/static`, con una
+  pestana por historia de usuario.
 
 ## Estandares de codificacion
 
