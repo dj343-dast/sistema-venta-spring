@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Expone por HTTP las operaciones sobre los productos del inventario.
  * Todas las direcciones empiezan por /api/productos.
+ * Historia de usuario: HU-03 (administrar productos y su stock)
  */
 @RestController
 @RequestMapping("/api/productos")

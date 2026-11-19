@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Expone por HTTP las operaciones sobre los proveedores del inventario.
  * Todas las direcciones empiezan por /api/proveedores.
+ * Historia de usuario: HU-02 (administrar proveedores).
  */
 @RestController
 @RequestMapping("/api/proveedores")

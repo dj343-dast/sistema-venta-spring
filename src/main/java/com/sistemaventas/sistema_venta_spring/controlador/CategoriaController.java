@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Expone por HTTP las operaciones sobre las categorias del inventario.
  * Todas las direcciones empiezan por /api/categorias.
+ * Historia de usuario: HU-01 (administrar categorias).
  */
 @RestController
 @RequestMapping("/api/categorias")

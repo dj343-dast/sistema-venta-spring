@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Expone por HTTP las operaciones sobre los clientes.
  * Todas las direcciones empiezan por /api/clientes.
+ * Historia de usuario: HU-04 (administrar clientes)
  */
 @RestController
 @RequestMapping("/api/clientes")

@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Logica de negocio de las ventas: valida existencias, descuenta el
  * inventario y guarda la venta con sus lineas en una sola transaccion.
+ * Historias de usuario: HU-05 (registrar una venta) y HU-06 (rechazar una venta sin stock)
  */
 @Service
 public class VentaService {

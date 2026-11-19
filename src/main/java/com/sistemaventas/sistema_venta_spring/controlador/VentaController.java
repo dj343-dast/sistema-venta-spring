@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 /**
  * Expone por HTTP el registro y la consulta de ventas.
  * Todas las direcciones empiezan por /api/ventas.
+ * Historias de usuario: HU-05 (registrar una venta) y HU-07 (consultar ventas)
  */
 @RestController
 @RequestMapping("/api/ventas")

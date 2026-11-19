@@ -2,6 +2,7 @@ package com.sistemaventas.sistema_venta_spring.excepcion;
 
 /**
  * Se lanza cuando se intenta vender mas unidades de las que hay en inventario.
+ * Historia de usuario: HU-06.
  */
 public class StockInsuficienteException extends RuntimeException {
 

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 /**
  * Convierte las excepciones de la aplicacion en respuestas HTTP con un
  * mensaje claro. Aplica a todos los controladores.
+ * Historia de usuario: HU-08 (mensajes de error claros).
  */
 @RestControllerAdvice
 public class ManejadorErrores {
