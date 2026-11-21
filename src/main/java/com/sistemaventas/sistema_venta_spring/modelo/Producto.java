@@ -81,7 +81,8 @@ public class Producto {
     @ManyToOne
     @JoinColumn(name = "id_Proveedor", nullable = false)
     private Proveedor proveedor;
-        /** Constructor sin argumentos que exige JPA. */
+
+    /** Constructor sin argumentos que exige JPA. */
     public Producto() {
     }
 
