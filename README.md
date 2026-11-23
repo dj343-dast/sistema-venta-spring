@@ -187,4 +187,10 @@ Todos los errores se devuelven con la misma forma:
 
 ## Estandares de codificacion
 
-- Clases en UpperCamelCase, metodos y variables en lowerCamelCase,
+- Clases en UpperCamelCase, metodos y variables en lowerCamelCase, constantes en MAYUSCULAS_CON_GUIONES.
+- Paquetes en minuscula.
+- Cada clase y cada metodo con logica llevan comentario Javadoc (los getters y setters simples no).
+- Los datos de conexion (`application-local.properties`) no se suben al repositorio.
+- La logica de negocio vive en el servicio y no en los controladores.
+- Mensajes de commit en pasado y en espanol, uno por cada cambio (por ejemplo: "Agregado ClienteController con el CRUD").
+
