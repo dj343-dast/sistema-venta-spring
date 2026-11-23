@@ -11,5 +11,6 @@ import jakarta.validation.constraints.NotNull;
  */
 public record ItemVenta(
         @NotNull(message = "El producto es obligatorio") Integer idProducto,
-        @NotNull(message = "La cantidad es obligatoria") @Min(value = 1, message = "La cantidad debe ser al menos 1") Integer cantidad) {
+        @NotNull(message = "La cantidad es obligatoria")
+        @Min(value = 1, message = "La cantidad debe ser al menos 1") Integer cantidad) {
 }
