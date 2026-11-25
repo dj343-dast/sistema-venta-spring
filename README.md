@@ -185,7 +185,7 @@ Todos los errores se devuelven con la misma forma:
 - Diseno de la base de datos: `base_de_datos.sql`.
 - Prototipo de pantallas: la pagina de `src/main/resources/static`, con una pestana por servicio.
 
-## Estandares de codificacion.
+## Estandares de codificacion
 
 - Clases en UpperCamelCase, metodos y variables en lowerCamelCase, constantes en MAYUSCULAS_CON_GUIONES.
 - Paquetes en minuscula.
