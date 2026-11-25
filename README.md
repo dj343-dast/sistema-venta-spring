@@ -194,4 +194,3 @@ Todos los errores se devuelven con la misma forma:
 - La logica de negocio vive en el servicio y no en los controladores.
 - Mensajes de commit en pasado y en espanol, uno por cada cambio (por ejemplo: "Agregado ClienteController con el CRUD").
 
-estandar
